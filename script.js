@@ -1,75 +1,73 @@
-const form = document.getElementById('item-form');
-const cardsRow = document.getElementById('cards-row');
+const STORAGE_KEY = "daftarBelanja";
+let daftarBelanja = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-const storage_KEY = 'daftarBelanjaItems';
+document.addEventListener("DOMContentLoaded", () => {
+    document.getElementById("item-form").addEventListener("submit", event => {
+        event.preventDefault();
+    });
+    renderDaftarBelanja();
+});
+// fungsi untuk menyimpan barang ke dalam daftar belanja
+function simpanBarang() {
+    const namaBarang = document.getElementById("namaBarang").value.trim();
+    const jumlah = parseInt(document.getElementById("jumlah").value, 10);
+    const keterangan = document.getElementById("keterangan").value.trim();
 
-function getItems() {
-    const stored = localStorage.getItem(STORAGE_KEY);
-    return stored ? JSON.parse(stored) : [];
+    // 
+    const item = {
+        id: Date.now().toString(),
+        namaBarang,
+        jumlah,
+        keterangan,
+        gambar: "https://plus.unsplash.com/premium_photo-1671128087724-04f3777ed597?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHNlbWJha298ZW58MHx8MHx8fDA%3D"
+    };
+
+    daftarBelanja.push(item);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(daftarBelanja));
+    renderDaftarBelanja();
+    resetForm();
 }
 
-function saveItems(items) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(items));
-}
+// fungsi untuk menampilkan daftar belanja
+function renderDaftarBelanja() {
+    const container = document.getElementById("DaftarBelanja");
+    container.innerHTML = "";
 
-function createCard(item) {
-    const col = document.createElement('div');
-    col.className = 'col-12 col-sm-6 col-lg-3';
-
-    const card = document.createElement('div');
-    card.className = 'card h-100 shadow-sm';
-
-    const body = document.createElement('div');
-    body.className = 'card-body';
-
-    const title = document.createElement('h5');
-    title.className = 'card-title';
-    title.textContent = item.namaBarang;
-
-    const jumlah = document.createElement('p');
-    jumlah.className = 'card-text mb-1';
-    jumlah.innerHTML = `<strong>Jumlah:</strong> ${item.jumlah}`;
-
-    const keterangan = document.createElement('p');
-    keterangan.className = 'card-text text-muted';
-    keterangan.innerHTML = `<strong>Keterangan:</strong> ${item.keterangan || '-'}`;
-
-    body.append(title, jumlah, keterangan);
-    card.appendChild(body);
-    col.appendChild(card);
-    return col;
-}
-
-function renderItems() {
-    cardsRow.innerHTML = '';
-    const items = getItems();
-    if (items.length === 0) {
-        cardsRow.innerHTML = `
+    if (daftarBelanja.length === 0) {
+        container.innerHTML = `
             <div class="col-12">
-                <div class="alert alert-secondary mb-0">
-                    Belum ada barang tersimpan.
-                </div>
+                <div class="alert alert-info">Belum ada barang. Tambahkan item baru.</div>
             </div>
         `;
         return;
     }
-    items.forEach(item => cardsRow.appendChild(createCard(item)));
+// untuk setiap item dalam daftar belanja, buat sebuah kartu dan tambahkan ke dalam container
+    daftarBelanja.forEach(item => {
+        const card = document.createElement("div");
+        card.className = "col-12 col-sm-6 col-lg-3";
+        card.innerHTML = `
+            <div class="card h-100">
+                <img src="${item.gambar}" class="card-img-top" alt="Gambar ${item.namaBarang}">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title">${item.namaBarang}</h5>
+                    <p class="card-text mb-1"><strong>Jumlah:</strong> ${item.jumlah}</p>
+                    <p class="card-text mb-3"><strong>Keterangan:</strong> ${item.keterangan || "-"}</p>
+                    <button type="button" class="btn btn-danger mt-auto" onclick="hapusBarang('${item.id}')">Hapus</button>
+                </div>
+            </div>
+        `;
+        container.appendChild(card);
+    });
 }
 
-form.addEventListener('submit', event => {
-    event.preventDefault();
-    const namaBarang = document.getElementById('namaBarang').value.trim();
-    const jumlah = document.getElementById('jumlah').value.trim();
-    const keterangan = document.getElementById('keterangan').value.trim();
+function hapusBarang(id) {
+    daftarBelanja = daftarBelanja.filter(item => item.id !== id);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(daftarBelanja));
+    renderDaftarBelanja();
+}
 
-    if (!namaBarang || !jumlah) return;
-
-    const items = getItems();
-    items.push({ namaBarang, jumlah, keterangan });
-    saveItems(items);
-
-    renderItems();
-    form.reset();
-});
-
-renderItems();
+function resetForm() {
+    document.getElementById("namaBarang").value = "";
+    document.getElementById("jumlah").value = "";
+    document.getElementById("keterangan").value = "";
+}
