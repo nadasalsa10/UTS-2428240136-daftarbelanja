@@ -1,5 +1,7 @@
+// untuk menyimpan daftar belanja di localStorage dengan kunci "daftarBelanja"
 const STORAGE_KEY = "daftarBelanja";
 let daftarBelanja = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+
 
 document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("item-form").addEventListener("submit", event => {
@@ -7,21 +9,33 @@ document.addEventListener("DOMContentLoaded", () => {
     });
     renderDaftarBelanja();
 });
+
 // fungsi untuk menyimpan barang ke dalam daftar belanja
 function simpanBarang() {
     const namaBarang = document.getElementById("namaBarang").value.trim();
     const jumlah = parseInt(document.getElementById("jumlah").value, 10);
     const keterangan = document.getElementById("keterangan").value.trim();
 
-    // 
+    //untuk validasi input, pastikan nama barang tidak kosong dan jumlah lebih dari 0
+    if (!namaBarang) {
+        alert("Nama barang tidak boleh kosong.");
+        return;
+    }
+    if (jumlah < 1) {
+        alert("Jumlah barang harus lebih dari 0.");
+        return;
+    }
+
+    //fungsi untuk membuat sebuah objek item baru dengan id unik, nama barang, jumlah, keterangan, dan gambar default
     const item = {
         id: Date.now().toString(),
         namaBarang,
         jumlah,
         keterangan,
-        gambar: "https://plus.unsplash.com/premium_photo-1671128087724-04f3777ed597?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTd8fHNlbWJha298ZW58MHx8MHx8fDA%3D"
+        gambar: "https://images.unsplash.com/photo-1723169863726-fa6c9262c086?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fHNlbWJha298ZW58MHx8MHx8fDA%3D"
     };
 
+    // tambahkan item ke dalam daftar belanja dan simpan ke localStorage
     daftarBelanja.push(item);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(daftarBelanja));
     renderDaftarBelanja();
@@ -33,6 +47,7 @@ function renderDaftarBelanja() {
     const container = document.getElementById("DaftarBelanja");
     container.innerHTML = "";
 
+    // jika daftar belanja kosong, tampilkan pesan informasi
     if (daftarBelanja.length === 0) {
         container.innerHTML = `
             <div class="col-12">
@@ -60,14 +75,24 @@ function renderDaftarBelanja() {
     });
 }
 
+// simpan array daftar belanja ke localStorage setiap kali ada perubahan
+localStorage.setItem("daftarBelanja","[]");
+let data = JSON.parse(localStorage.getItem("daftarBelanja")) || [];
+console.log(data);
+
+// fungsi untuk menghapus barang dari daftar belanja
 function hapusBarang(id) {
     daftarBelanja = daftarBelanja.filter(item => item.id !== id);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(daftarBelanja));
     renderDaftarBelanja();
 }
 
+// fungsi untuk mereset form setelah menyimpan barang
 function resetForm() {
     document.getElementById("namaBarang").value = "";
     document.getElementById("jumlah").value = "";
     document.getElementById("keterangan").value = "";
 }
+
+//jalankan function tampil
+tampil();
