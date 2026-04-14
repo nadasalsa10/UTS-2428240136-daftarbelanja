@@ -15,6 +15,7 @@ function simpanBarang() {
     const namaBarang = document.getElementById("namaBarang").value.trim();
     const jumlah = parseInt(document.getElementById("jumlah").value, 10);
     const keterangan = document.getElementById("keterangan").value.trim();
+    const Image = document.getElementById("gambar").value.trim();
 
     //untuk validasi input, pastikan nama barang tidak kosong dan jumlah lebih dari 0
     if (!namaBarang) {
@@ -32,7 +33,7 @@ function simpanBarang() {
         namaBarang,
         jumlah,
         keterangan,
-        gambar: "https://images.unsplash.com/photo-1723169863726-fa6c9262c086?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MzF8fHNlbWJha298ZW58MHx8MHx8fDA%3D"
+        gambar: Image || "https://via.placeholder.com/150?text=No+Image"
     };
 
     // tambahkan item ke dalam daftar belanja dan simpan ke localStorage
@@ -92,6 +93,7 @@ function resetForm() {
     document.getElementById("namaBarang").value = "";
     document.getElementById("jumlah").value = "";
     document.getElementById("keterangan").value = "";
+    document.getElementById("gambar").value = "";
 }
 
 //jalankan function tampil
